@@ -16,6 +16,6 @@
     "wrangler": "^3.0.0"
   },
   "dependencies": {
-    "@cloudflare/ai": "^1.0.36"
+    "@cloudflare/ai": "^1.0.39"
   }
 }

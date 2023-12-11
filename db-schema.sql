@@ -10,3 +10,9 @@ create table if not exists GenImgResult (
     BucketId text,
     Error text
 );
+
+create table if not exists Inputs (
+    SourceUrl text not null primary key,
+    ContentType text not null,
+    BucketId text not null
+);
