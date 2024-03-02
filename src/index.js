@@ -1,10 +1,10 @@
 import { Ai } from '@cloudflare/ai';
 
-async function _imageGen(requestId, env, ai, results, type) {
+async function _imageGen(model, requestId, env, ai, results, type) {
 	let failureMessage = null;
 	const name = `${requestId}.${type}.png`;
 	try {
-		const imageBytes = await ai.run(await env.ConfigKVStore.get('textToImageModel'), { prompt: results[type].prompt });
+		const imageBytes = await ai.run(model, { prompt: results[type].prompt });
 		const { etag, size } = await env.GEN_IMAGES_BUCKET.put(name, imageBytes);
 		console.log(`Object metadata for ${name}: ${JSON.stringify({ etag, size })}`);
 		return name;
@@ -31,8 +31,10 @@ export default {
 
 			const reqObj = JSON.parse(await env.RequestsKVStore.get(requestId));
 
-			reqObj.results.good.imageBucketId = await _imageGen(requestId, env, ai, reqObj.results, 'good');
-			reqObj.results.bad.imageBucketId = await _imageGen(requestId, env, ai, reqObj.results, 'bad');
+			const imageModel = await env.ConfigKVStore.get('textToImageModel');
+			reqObj.meta.image_model_used = imageModel;
+			reqObj.results.good.imageBucketId = await _imageGen(imageModel, requestId, env, ai, reqObj.results, 'good');
+			reqObj.results.bad.imageBucketId = await _imageGen(imageModel, requestId, env, ai, reqObj.results, 'bad');
 
 			reqObj.status = 'processed';
 			await env.RequestsKVStore.put(requestId, JSON.stringify(reqObj));
