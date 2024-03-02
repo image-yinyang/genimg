@@ -4,7 +4,7 @@ async function _imageGen(requestId, env, ai, results, type) {
 	let failureMessage = null;
 	const name = `${requestId}.${type}.png`;
 	try {
-		const imageBytes = await ai.run('@cf/stabilityai/stable-diffusion-xl-base-1.0', { prompt: results[type].prompt });
+		const imageBytes = await ai.run(await env.ConfigKVStore.get('textToImageModel'), { prompt: results[type].prompt });
 		const { etag, size } = await env.GEN_IMAGES_BUCKET.put(name, imageBytes);
 		console.log(`Object metadata for ${name}: ${JSON.stringify({ etag, size })}`);
 		return name;
