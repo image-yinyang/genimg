@@ -24,25 +24,24 @@ async function _imageGen(model, requestId, env, ai, results, type) {
 
 export default {
 	async queue(batch, env) {
-		const ai = new Ai(env.AI);
-		for (let message of batch.messages) {
-			const { requestId } = message.body;
-			console.log(`Processing request ${requestId}...`);
+    for (let message of batch.messages) {
+      const { requestId } = message.body;
+      console.log(`Processing request ${requestId}...`);
 
-			const reqObj = JSON.parse(await env.RequestsKVStore.get(requestId));
+      const reqObj = JSON.parse(await env.RequestsKVStore.get(requestId));
 
-			const imageModel = await env.ConfigKVStore.get('textToImageModel');
-			reqObj.meta.image_model_used = imageModel;
-			reqObj.results.good.imageBucketId = await _imageGen(imageModel, requestId, env, ai, reqObj.results, 'good');
-			reqObj.results.bad.imageBucketId = await _imageGen(imageModel, requestId, env, ai, reqObj.results, 'bad');
+      const imageModel = await env.ConfigKVStore.get('textToImageModel');
+      reqObj.meta.image_model_used = imageModel;
+      reqObj.results.good.imageBucketId = await _imageGen(imageModel, requestId, env, env.AI, reqObj.results, 'good');
+      reqObj.results.bad.imageBucketId = await _imageGen(imageModel, requestId, env, env.AI, reqObj.results, 'bad');
 
-			reqObj.status = 'processed';
-			await env.RequestsKVStore.put(requestId, JSON.stringify(reqObj));
-			const { success, meta } = await env.DB.prepare('insert into ByInputUrl values (?, ?);').bind(reqObj.input.url, requestId).run();
-			if (!success) {
-				console.error(`DB insert failure: ${JSON.stringify(meta)}`);
-			}
-			console.log(`Done with request ${requestId}`);
-		}
+      reqObj.status = 'processed';
+      await env.RequestsKVStore.put(requestId, JSON.stringify(reqObj));
+      const { success, meta } = await env.DB.prepare('insert into ByInputUrl values (?, ?);').bind(reqObj.input.url, requestId).run();
+      if (!success) {
+        console.error(`DB insert failure: ${JSON.stringify(meta)}`);
+      }
+      console.log(`Done with request ${requestId}`);
+    }
 	},
 };

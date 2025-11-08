@@ -13,9 +13,11 @@
   },
   "devDependencies": {
     "prettier": "^3.1.0",
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.46.0"
   },
   "dependencies": {
-    "@cloudflare/ai": "^1.0.39"
+    "@cloudflare/ai": "^1.0.39",
+    "base64-js": "^1.5.1",
+    "mustache": "^4.2.0"
   }
 }

@@ -1,0 +1,40 @@
+{
+  "name": "yinyang-genimg",
+  "compatibility_date": "2025-11-08",
+  "main": "src/index.js",
+  "observability": {
+    "logs": {
+      "enabled": false,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    }
+  },
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "yinyang",
+      "database_id": "87a73902-ab87-4a4e-8d00-2dd522da9600"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "RequestsKVStore",
+      "id": "cbf0eaa92c7347479a10a23a8844e69b"
+    },
+    {
+      "binding": "ConfigKVStore",
+      "id": "6606e53b405b4d9b828e527469a837c8"
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "GEN_IMAGES_BUCKET",
+      "bucket_name": "yinyang-generated-images"
+    }
+  ]
+}
